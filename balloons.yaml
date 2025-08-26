@@ -1,0 +1,43 @@
+apiVersion: config.nri/v1alpha1
+kind: BalloonsPolicy
+metadata:
+  name: oss25
+  namespace: kube-system
+spec:
+  reservedResources:
+    cpu: 750m
+  pinCPU: true
+  pinMemory: true
+  balloonTypes:
+  - name: l2burst
+    allocatorPriority: high
+    minCPUs: 1
+    maxCPUs: 2
+    shareIdleCPUsInSame: l2cache
+    allocatorTopologyBalancing: false # create instances to the same L2 group
+    namespaces:
+      - apps
+  - name: l2pack
+    allocatorTopologyBalancing: false # create instances to the same L2 group
+    shareIdleCPUsInSame: l2cache
+    allocatorPriority: high
+    minCPUs: 1
+    maxCPUs: 2
+    namespaces:
+      - infra 
+  instrumentation:
+    httpEndpoint: :8891
+    metrics:
+      enabled:
+      - buildinfo
+      - rdt
+      - policy
+  # log:
+  #   debug:
+  #     - resource-manager
+  #     - cache
+  #     - policy
+  #     - sysfs
+  #   source: true
+  #   klog:
+  #     skip_headers: true
